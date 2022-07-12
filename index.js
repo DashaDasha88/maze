@@ -28,6 +28,23 @@ const walls = [
 
 World.add(world, walls);
 
+const shuffle = (arr) => {
+  let counter = arr.length;
+
+  while (counter > 0) {
+    const index = Math.floor(Math.random() * counter);
+
+    counter--;
+
+    const temp = arr[counter];
+    arr[counter] = arr[index];
+    arr[index] = temp;
+  }
+
+  return arr;
+
+}
+
 const grid = Array(cells)
   .fill(null)
   .map(() => Array(cells).fill(false));
@@ -40,5 +57,47 @@ const horizontals = Array(cells - 1)
   .fill(null)
   .map(() => Array(cells).fill(false));
 
-  const startRow = Math.floor(Math.random() * cells);
-  const startColumn = Math.floor(Math.random() * cells);
+const startRow = Math.floor(Math.random() * cells);
+const startColumn = Math.floor(Math.random() * cells);
+
+const stepThroughCell = (row, column) => {
+
+  if (grid[row][column]) {
+    return;
+  }
+
+  grid[row][column] = true;
+
+  const neighbours = shuffle([
+    [row - 1, column, 'up'],
+    [row, column + 1, 'right'],
+    [row + 1, column, 'down'],
+    [row, column - 1, 'left']
+  ]);
+
+  for (let neighbour of neighbours) {
+    const [nextRow, nextColumn, direction] = neighbour;
+
+    if (nextRow < 0 || nextRow >= cells || nextColumn < 0 || nextColumn >= cells) {
+      continue;
+    }
+
+    if(grid[nextRow][nextColumn]){
+      continue;
+    }
+
+    if (direction === 'left') {
+      verticals[row][column - 1] = true;
+    } else if (direction === 'right') {
+      verticals[row][column] = true;
+    } else if (direction === 'up') {
+      horizontals[row - 1][column] = true;
+    } else if (direction === 'down') {
+      horizontals[row][column] = true;
+    }
+
+  }
+
+};
+
+stepThroughCell(startRow, startColumn);
