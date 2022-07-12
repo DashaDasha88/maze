@@ -1,8 +1,10 @@
 const { Engine, Render, Runner, World, Bodies } = Matter;
 
-const cells = 5;
+const cells = 3;
 const width = 600;
 const height = 600;
+
+const unitLength = width / cells;
 
 const engine = Engine.create();
 const { world } = engine;
@@ -28,7 +30,7 @@ const walls = [
 
 World.add(world, walls);
 
-const shuffle = (arr) => {
+const shuffle = arr => {
   let counter = arr.length;
 
   while (counter > 0) {
@@ -43,7 +45,7 @@ const shuffle = (arr) => {
 
   return arr;
 
-}
+};
 
 const grid = Array(cells)
   .fill(null)
@@ -96,8 +98,64 @@ const stepThroughCell = (row, column) => {
       horizontals[row][column] = true;
     }
 
-  }
+    stepThroughCell(nextRow, nextColumn);
 
+  }
 };
 
 stepThroughCell(startRow, startColumn);
+
+horizontals.forEach((row, rowIndex) => {
+  row.forEach((open, columnIndex) => {
+    if (open) {
+      return;
+    }
+
+    const wall = Bodies.rectangle(
+      columnIndex * unitLength + unitLength / 2, //wall centerpoint
+      rowIndex * unitLength + unitLength, //y coordinate
+      unitLength, //width of one cell
+      10, //how tall the wall will be
+      {
+        isStatic: true
+      }
+    );
+
+    World.add(world, wall);
+
+  });
+
+});
+
+verticals.forEach((row, rowIndex) => {
+  row.forEach((open, columnIndex) => {
+    if (open) {
+      return;
+    }
+
+    const wall = Bodies.rectangle(
+      columnIndex * unitLength + unitLength,
+      rowIndex * unitLength + unitLength / 2,
+      10,
+      unitLength,
+      {
+        isStatic: true
+      }
+    );
+
+    World.add(world, wall);
+
+  });
+});
+
+const goal = Bodies.rectangle(
+  width - unitLength / 2,
+  height - unitLength / 2,
+  unitLength * .7,
+  unitLength * .7,
+  {
+    isStatic: true
+  }
+);
+
+World.add(world, goal);
