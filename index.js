@@ -198,7 +198,8 @@ document.addEventListener('keydown', event => {
 //Win Condition
 
 Events.on(engine, 'collisionStart', event => {
-  event.pairs.forEach((collision) => {
+  event.pairs.forEach(collision => {
+    const labels = ['ball', 'goal'];
 
     if(
       labels.includes(collision.bodyA.label) &&
